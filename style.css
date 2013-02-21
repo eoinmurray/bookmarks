@@ -98,23 +98,6 @@ body {
   text-decoration: line-through;
 }
 
-#todo-list .destroy {
-  position: absolute;
-  right: 5px;
-  top: 20px;
-  display: none;
-  cursor: pointer;
-  width: 20px;
-  height: 20px;
-}
-
-#todo-list li:hover .destroy {
-    display: block;
-}
-
-#todo-list .destroy:hover {
-    background-position: 0 -20px;
-}
 
 #todo-list li.editing {
   border-bottom: none;
