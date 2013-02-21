@@ -4,6 +4,7 @@
 <head>
   <meta charset="utf-8">
   <title>Backbone.js Todos</title>
+  <link rel="stylesheet" href="bootstrap.css"/>
   <link rel="stylesheet" href="style.css"/>
   <link rel="stylesheet" href="font-awesome.min.css"/>
 </head>
@@ -12,33 +13,33 @@
 
   <div id="todoapp">
 
-    <header>
-      <h1>Bookmarks</h1>
-      <input id="new-todo" type="text" placeholder="What needs to be done?">
+    <header id="header">
+      <p class="lead">Bookmarks</p>
+      <label><small><em>Bookmark title:</small></em></label>
+      <input id="new-todo" class="input-xxlarge" type="text" placeholder="What link do you want to save?">
+      <label><small><em>url: <span id="url"></span></small></em></label>
+      <a href='' class='save'><button class="btn">Save</button></a>
     </header>
+    
+
 
     <section id="main">
+      <label class="checkbox">
       <input id="toggle-all" type="checkbox">
-      <label for="toggle-all">Mark all as complete</label>
+      Mark all as read
+      </label>
       <ul id="todo-list"></ul>
     </section>
 
+
     <footer>
-      <a id="clear-completed">Clear completed</a>
+      <a id="clear-completed">Clear read</a>
       <div id="todo-count"></div>
     </footer>
 
   </div>
 
-  <div id="instructions">
-    Double-click to edit a todo.
-  </div>
-
-  <div id="credits">
-    Created by
-    <br />
-    <a href="http://cheetah.io/">Eoin Murray</a>.
-  </div>
+  
 
   <script src="libs.js"></script>
   <script src="app.js"></script>

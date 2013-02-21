@@ -35,10 +35,10 @@ var Bookmark = Backbone.Model.extend({
     },
 
 
-    details_from_chrome: function(){
+    details_from_chrome: function(callback){
         var _this = this
-        //var truth = (typeof chrome.tab != "undefined") && ( typeof chrome.windows.WINDOW_ID_CURRENT != "undefined") 
-        var truth = true
+        var truth = (typeof chrome.windows.WINDOW_ID_CURRENT != "undefined") 
+        
         if(truth){
             chrome.tabs.query({
               active: true,
@@ -48,11 +48,17 @@ var Bookmark = Backbone.Model.extend({
                 var tab = array_of_Tabs[0];
                 _this.set({'title' : tab.title})
                 _this.set({'url' : tab.url})
+                if(callback){
+                  callback(tab)
+                }
             });
         }
         else{
-          _this.set({'title' : 'Google'})
-          _this.set({'url' : 'http://google.com'})
+          _this.set({'title' : document.title})
+          _this.set({'url' : window.location.pathname})
+          if(callback){
+            callback(this.toJSON())
+          }
 
         }
 
@@ -82,7 +88,7 @@ var BookmarkList = Backbone.Collection.extend({
     },
 
     comparator: function(bookmark) {
-        return bookmark.get('order');
+        return - new Date(bookmark.get('created')).getTime();
     }
 
 });
@@ -96,24 +102,35 @@ var BookmarkView = Backbone.View.extend({
     tagName:  "li",
 
     template: function(model){
-      var str = '<div class="view">'
-      str = str + '<input class="toggle" type="checkbox" '+ (model.done ? 'checked="checked"' : '')+' />'
-      str = str + '<label>'+model.title+'</label>'
-      str = str + '<a class="destroy"></a>'
-      str = str + '</div><input class="edit" type="text" value="'+ model.title +'" />'
+      var str =   '<label class="checkbox">'
+      str = str + '<input class="toggle" type="checkbox" '+ (model.done ? 'checked="checked"' : '')+'/>'
+      
+      str = str + '<a class="link" href='+_.escape(model.url)+'>'+_.escape(model.title)+'</a>'
+      
+      str = str + '</label>'
+      str = str + '<label><small><em>url: '+_.escape(model.url)+'</small></em></label>'
+      
+
+      //str = str + '<a class="destroy"></a>'
+      
+      //str = str + '<a id="edit" href=""><label>edit</label></a>'
+      //str = str + '<input class="edit" type="text" value="'+ model.title +'" />'
       return str
+
+
     },
 
     events: {
       "click .toggle"   : "toggleDone",
-      "dblclick .view"  : "edit",
+      "click #edit"  : "edit",
+      "click .link" : "navigate",
       "click a.destroy" : "clear",
       "keypress .edit"  : "updateOnEnter",
       "blur .edit"      : "close"
     },
 
     initialize: function() {
-      this.model.on('change', this.render(), this);
+      this.model.on('change', this.render, this);
       this.model.on('destroy', this.remove, this);
     },
 
@@ -128,7 +145,8 @@ var BookmarkView = Backbone.View.extend({
       this.model.toggle();
     },
 
-    edit: function() {
+    edit: function(e) {
+      e.preventDefault()
       this.$el.addClass("editing");
       this.input.focus();
     },
@@ -139,7 +157,7 @@ var BookmarkView = Backbone.View.extend({
         this.clear();
       } else {
         this.model.save({title: value});
-        this.model.details_from_chrome()
+        //this.model.details_from_chrome()
         this.$el.removeClass("editing");
       }
     },
@@ -152,6 +170,11 @@ var BookmarkView = Backbone.View.extend({
     // Remove the item, destroy the model.
     clear: function() {
       this.model.destroy();
+    },
+
+    navigate: function(e){
+      e.preventDefault()
+      chrome.tabs.update(null, {url:this.model.get('url')});
     }
 
 });
@@ -163,21 +186,32 @@ var AppView = Backbone.View.extend({
     statsTemplate: function(model){
     var str = ''
     if (model.done) {
-      str = str + '<a id="clear-completed">Clear '+ model.done +' completed '+(model.done == 1 ? 'item' : 'items')+'</a>'
+      str = str + '<a id="clear-completed"><button class="btn">Clear '+ model.done +' completed '+(model.done == 1 ? 'item' : 'items')+'</button></a>'
     }
     str = str + '<div class="todo-count"><b>'+ model.remaining +'</b> '+(model.remaining == 1 ? 'item' : 'items' )+' left</div>'
+    str = str + '<div id="credits">Created by Eoin Murray. Source on <a class="external" href="http://github.com/eoinmurray"><i class="icon-github "></i></a></div>'
     return str
     },
 
     events: {
       "keypress #new-todo":  "createOnEnter",
+      "click .save": "createOnSave",
       "click #clear-completed": "clearCompleted",
-      "click #toggle-all": "toggleAllComplete"
+      "click #toggle-all": "toggleAllComplete",
+      "click .external" : 'external'
+
     },
 
     initialize: function() {
+      this.model = new Bookmark()
+      this.model.details_from_chrome()
+      this.model.on('change', function(){
+        this.render()
+      }, this)
 
       this.input = this.$("#new-todo");
+      this.input_url = this.$("#url");
+      
       this.allCheckbox = this.$("#toggle-all")[0];
 
       Bookmarks.on('add', this.addOne, this);
@@ -190,12 +224,14 @@ var AppView = Backbone.View.extend({
       Bookmarks.fetch();
     },
 
-
     render: function() {
       var done = Bookmarks.done().length;
       var remaining = Bookmarks.remaining().length;
+      this.input.val(this.model.get('title'))
+      this.input_url.text(this.model.get('url')||'the url will appear here')
 
       if (Bookmarks.length) {
+        
         this.main.show();
         this.footer.show();
         this.footer.html(this.statsTemplate({done: done, remaining: remaining}));
@@ -224,9 +260,18 @@ var AppView = Backbone.View.extend({
     createOnEnter: function(e) {
       if (e.keyCode != 13) return;
       if (!this.input.val()) return;
+      console.log(this.model.get('url'))
+      Bookmarks.create(this.model);
+      this.render()
+    },
 
-      Bookmarks.create({title: this.input.val()});
-      this.input.val('');
+    createOnSave: function(e) {
+      e.preventDefault()
+      if (!this.input.val()) return;
+
+
+      Bookmarks.create(this.model);
+      this.render()
     },
 
     // Clear all done todo items, destroying their models.
@@ -238,10 +283,20 @@ var AppView = Backbone.View.extend({
     toggleAllComplete: function () {
       var done = this.allCheckbox.checked;
       Bookmarks.each(function (bookmark) { bookmark.save({'done': done}); });
+    },
+
+    external: function(e){
+      e.preventDefault()
+      chrome.tabs.update(null, {url:e.currentTarget.href});
     }
+
+
 
 });
 
 var App = new AppView;
 
 });
+
+
+

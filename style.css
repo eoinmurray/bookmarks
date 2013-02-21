@@ -4,6 +4,19 @@ body {
   padding: 0;
 }
 
+#header{
+  border-bottom-color:#EEEEEE;
+  border-bottom-style:solid;
+  border-bottom-width:1px;
+  padding-bottom:10px;
+  margin-bottom: 10px;
+}
+a{
+  background-color: white;
+  border: 1px solid white;
+  text-decoration: none;
+  line-height: 32px;
+}
 body {
   font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
   line-height: 1.4em;
@@ -17,17 +30,12 @@ body {
 #todoapp {
   background: #fff;
   padding: 20px;
-  margin-bottom: 40px;
   -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
   -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
   -ms-box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
   -o-box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
   box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
-  -webkit-border-radius: 0 0 5px 5px;
-  -moz-border-radius: 0 0 5px 5px;
-  -ms-border-radius: 0 0 5px 5px;
-  -o-border-radius: 0 0 5px 5px;
-  border-radius: 0 0 5px 5px;
+
 }
 
 #todoapp h1 {
@@ -56,6 +64,13 @@ body {
 #todoapp input::-webkit-input-placeholder {
   font-style: italic;
 }
+
+
+.toggle{
+  margin-top: 10px !important;
+
+}
+
 
 #main {
   display: none;
@@ -134,48 +149,21 @@ body {
   display: none;
   margin: 0 -20px -20px -20px;
   overflow: hidden;
-  color: #555555;
-  background: #f4fce8;
   border-top: 1px solid #ededed;
   padding: 0 20px;
   line-height: 37px;
-  -webkit-border-radius: 0 0 5px 5px;
-  -moz-border-radius: 0 0 5px 5px;
-  -ms-border-radius: 0 0 5px 5px;
-  -o-border-radius: 0 0 5px 5px;
-  border-radius: 0 0 5px 5px;
 }
 
 #clear-completed {
   float: right;
-  line-height: 20px;
-  text-decoration: none;
-  background: rgba(0, 0, 0, 0.1);
-  color: #555555;
-  font-size: 11px;
   margin-top: 8px;
   margin-bottom: 8px;
   padding: 0 10px 1px;
   cursor: pointer;
-  -webkit-border-radius: 12px;
-  -moz-border-radius: 12px;
-  -ms-border-radius: 12px;
-  -o-border-radius: 12px;
-  border-radius: 12px;
-  -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 0 0;
-  -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 0 0;
-  -ms-box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 0 0;
-  -o-box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 0 0;
-  box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 0 0;
 }
 
 #clear-completed:hover {
-  background: rgba(0, 0, 0, 0.15);
-  -webkit-box-shadow: rgba(0, 0, 0, 0.3) 0 -1px 0 0;
-  -moz-box-shadow: rgba(0, 0, 0, 0.3) 0 -1px 0 0;
-  -ms-box-shadow: rgba(0, 0, 0, 0.3) 0 -1px 0 0;
-  -o-box-shadow: rgba(0, 0, 0, 0.3) 0 -1px 0 0;
-  box-shadow: rgba(0, 0, 0, 0.3) 0 -1px 0 0;
+
 }
 
 #clear-completed:active {
@@ -199,12 +187,16 @@ body {
 }
 
 #credits {
-  margin: 30px auto;
-  color: #999;
-  text-shadow: rgba(255, 255, 255, 0.8) 0 1px 0;
-  text-align: center;
+  border-top: 1px: solid black !important;
+  background-color: #fff;
+  color: #777;
+  margin: 5px auto;
+  margin-left: 10px;
 }
 
 #credits a {
   color: #888;
+  background-color: #fff;
+  border:none;
+  text-decoration: none;
 }
